@@ -2,57 +2,15 @@
 Introduction
 ============
 
-.. image:: https://readthedocs.org/projects/adafruit-circuitpython-sht31d/badge/?version=latest
-    :target: https://circuitpython.readthedocs.io/projects/sht31d/en/latest/
-    :alt: Documentation Status
-
-.. image :: https://img.shields.io/discord/327254708534116352.svg
-    :target: https://adafru.it/discord
-    :alt: Discord
-
-.. image:: https://github.com/adafruit/Adafruit_CircuitPython_SHT31D/workflows/Build%20CI/badge.svg
-    :target: https://github.com/adafruit/Adafruit_CircuitPython_SHT31D/actions/
-    :alt: Build Status
-
-CircuitPython module for the SHT31-D temperature and humidity sensor.
+Micropython  module for the SHT3X series (SHT30-D, SHT31-D, and SHT35-D) temperature and humidity sensors.
 
 Dependencies
 =============
 This driver depends on:
 
-* `Adafruit CircuitPython <https://github.com/adafruit/circuitpython>`_
-* `Bus Device <https://github.com/adafruit/Adafruit_CircuitPython_BusDevice>`_
+machine.i2c
 
 
-Please ensure all dependencies are available on the CircuitPython filesystem.
-This is easily achieved by downloading
-`the Adafruit library and driver bundle <https://github.com/adafruit/Adafruit_CircuitPython_Bundle>`_.
-
-Installing from PyPI
-====================
-
-On supported GNU/Linux systems like the Raspberry Pi, you can install the driver locally `from
-PyPI <https://pypi.org/project/adafruit-circuitpython-sht31d/>`_. To install for current user:
-
-.. code-block:: shell
-
-    pip3 install adafruit-circuitpython-sht31d
-
-To install system-wide (this may be required in some cases):
-
-.. code-block:: shell
-
-    sudo pip3 install adafruit-circuitpython-sht31d
-
-To install in a virtual environment in your current project:
-
-.. code-block:: shell
-
-    mkdir project-name && cd project-name
-    python3 -m venv .env
-    source .env/bin/activate
-    pip3 install adafruit-circuitpython-sht31d
-    
 Usage Example
 =============
 You must import the library to use it:
@@ -61,17 +19,8 @@ You must import the library to use it:
 
     import adafruit_sht31d
 
-This driver takes an instantiated and active I2C object (from the `busio` or
-the `bitbangio` library) as an argument to its constructor.  The way to create
-an I2C object depends on the board you are using. For boards with labeled SCL
-and SDA pins, you can:
-
-.. code:: python
-
-    from busio import I2C
-    from board import SCL, SDA
-
-    i2c = I2C(SCL, SDA)
+This driver takes an instantiated and active I2C object as an argument to its constructor.  The way to create
+an I2C object depends on the board you are using.
 
 Once you have created the I2C interface object, you can use it to instantiate
 the sensor object:
