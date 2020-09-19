@@ -52,7 +52,6 @@ except ImportError:
 import time
 
 from micropython import const
-from adafruit_bus_device.i2c_device import I2CDevice
 
 __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_SHT31D.git"
@@ -162,14 +161,16 @@ class SHT31D:
     """
     A driver for the SHT31-D temperature and humidity sensor.
 
-    :param i2c_bus: The `busio.I2C` object to use. This is the only required parameter.
+    :param i2c_bus: The `machine.I2C` object to use. This is the only required parameter.
     :param int address: (optional) The I2C address of the device.
     """
 
-    def __init__(self, i2c_bus, address=_SHT31_DEFAULT_ADDRESS):
+    def __init__(self, i2c, address=_SHT31_DEFAULT_ADDRESS):
         if address not in _SHT31_ADDRESSES:
             raise ValueError("Invalid address: 0x%x" % (address))
-        self.i2c_device = I2CDevice(i2c_bus, address)
+        # self.i2c_device = I2CDevice(i2c_bus, address)
+        self.i2c = i2c
+        self.address = address
         self._mode = MODE_SINGLE
         self._repeatability = REP_HIGH
         self._frequency = FREQUENCY_4
@@ -181,8 +182,7 @@ class SHT31D:
         self._reset()
 
     def _command(self, command):
-        with self.i2c_device as i2c:
-            i2c.write(struct.pack(">H", command))
+        self.i2c.writeto(self.address, struct.pack(">H", command))
 
     def _reset(self):
         """
@@ -225,8 +225,7 @@ class SHT31D:
                         time.sleep(delay[1])
             else:
                 time.sleep(0.001)
-        with self.i2c_device as i2c:
-            i2c.readinto(data)
+        self.i2c.readfrom_into(self.address, data)
         word = _unpack(data)
         length = len(word)
         temperature = [None] * (length // 2)
@@ -346,7 +345,7 @@ class SHT31D:
         The measured temperature in degrees celsius.
         'Single' mode reads and returns the current temperature as a float.
         'Periodic' mode returns the most recent readings available from the sensor's cache
-        in a FILO list of eight floats. This list is backfilled with with the
+        in a FILO list of eight floats. This list is backfilled with the
         sensor's maximum output of 130.0 when the sensor is read before the
         cache is full.
         """
@@ -359,7 +358,7 @@ class SHT31D:
         The measured relative humidity in percent.
         'Single' mode reads and returns the current humidity as a float.
         'Periodic' mode returns the most recent readings available from the sensor's cache
-        in a FILO list of eight floats. This list is backfilled with with the
+        in a FILO list of eight floats. This list is backfilled with the
         sensor's maximum output of 100.01831417975366 when the sensor is read
         before the cache is full.
         """
@@ -386,8 +385,7 @@ class SHT31D:
         data = bytearray(2)
         self._command(_SHT31_READSTATUS)
         time.sleep(0.001)
-        with self.i2c_device as i2c:
-            i2c.readinto(data)
+        self.i2c.readfrom_into(self.address, data)
         status = data[0] << 8 | data[1]
         return status
 
@@ -398,7 +396,6 @@ class SHT31D:
         data[0] = 0xFF
         self._command(_SHT31_READSERIALNBR)
         time.sleep(0.001)
-        with self.i2c_device as i2c:
-            i2c.readinto(data)
+        self.i2c.readfrom_into(self.address, data)
         word = _unpack(data)
         return (word[0] << 16) | word[1]
